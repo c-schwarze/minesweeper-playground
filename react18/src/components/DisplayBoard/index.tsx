@@ -8,10 +8,10 @@ interface DisplayBoardProps {
 
 const DisplayBoard = ({viewableBoard, clickHandler}: DisplayBoardProps) => {
     return (
-        viewableBoard.map((col: MinesweeperItem[], rowIndex: number) => (
-            <div className="grid-container">
-                {col.map((squareValue: MinesweeperItem, colIndex: number) => (
-                    <MinesweeperSquare squareValue={squareValue} clickHandler={() => clickHandler(rowIndex, colIndex)} rowIndex={rowIndex} colIndex={colIndex} />
+        viewableBoard.map((col: MinesweeperItem[], colIndex: number) => (
+            <div className="grid-container" key={`col-${colIndex}`}>
+                {col.map((squareValue: MinesweeperItem, rowIndex: number) => (
+                    <MinesweeperSquare squareValue={squareValue} clickHandler={() => clickHandler(colIndex, rowIndex)} rowIndex={rowIndex} colIndex={colIndex} />
                 ))}
             </div>
         ))
