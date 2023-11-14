@@ -8,7 +8,7 @@
 }
 
 .grid-container {
-  display: inline-block;
+  display: flex;
 }
 
 .grid-item {
@@ -22,6 +22,6 @@
   border-radius: 0%;
 }
 
-.minesweeper-square-revealed {
-
+.button-container {
+  margin-top: 30px;
 }

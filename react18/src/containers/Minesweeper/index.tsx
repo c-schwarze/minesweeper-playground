@@ -7,39 +7,41 @@ import { MinesweeperItem } from "./interfaces";
 
 
 // TODO - update type: string to be an enum
-const testReducer = (prevState: MinesweeperItem[][], action: { type: string; payload: {rowIndex: number, colIndex: number}; }): MinesweeperItem[][] => {
+// TODO - update these names
+const testReducer = (prevState: MinesweeperItem[][], action: { type: string; payload: {rowIndex?: number, colIndex?: number}; }): MinesweeperItem[][] => {
   let array;
   switch (action.type) {
-      case 'FIRST_CLICK':
-        // TODO - generate the board
-        // TODO - 
-        array = [...prevState];
-        // array[action.payload.rowIndex][action.payload.colIndex].isRevealed = true;
-        return array;
       case 'REVEAL':
-          console.log("testReducerREVEAL - prevState", prevState)
-          array = [...prevState];
-          console.log("testReducerREVEAL - array1", array)
-          console.log("Indices: ", action.payload.rowIndex, action.payload.colIndex);
-          console.log("array[action.payload.rowIndex][action.payload.colIndex]", array[action.payload.rowIndex][action.payload.colIndex])
-          const item = array[action.payload.rowIndex][action.payload.colIndex];
-          console.log("item", item)
-          item.isRevealed = true;
-          console.log("testReducerREVEAL - array2", array)
+        array = [...prevState];
+       
+        // make sure we have our params
+        if (action.payload.rowIndex === undefined || action.payload.colIndex === undefined) {
           return array;
-      // case 'CLEAR':
-      //     return prevState = [];
+        }
+
+        // if there are none revealed, we need to generate the board
+        if (array.map((col) => col.find((item) => item.isRevealed)).length > 0 ) {
+          // TODO - we need to generate the official board
+          GenerateBoard(array, BOARD_WIDTH, BOARD_HEIGHT, NUM_MINES);
+        }
+
+        let squareClicked = array[action.payload.rowIndex][action.payload.colIndex];
+        squareClicked.isRevealed = true;
+        if (squareClicked.numSurroundingMines === 0) {
+          // TODO - update each of the 8 surrounding tiles as well
+        }
+        return array;
+      case 'CLEAR':
+          return prevState = CreateEmptyBoard(BOARD_WIDTH, BOARD_HEIGHT);
       default:
-          return [[]]
+          return CreateEmptyBoard(BOARD_WIDTH, BOARD_HEIGHT)
   }
 }
 
 const Minesweeper = () => {
   const [board, boardDispatcher] = useReducer(testReducer, CreateEmptyBoard(BOARD_WIDTH, BOARD_HEIGHT));
 
-  console.log("board", board);
-
-  const clickHandler = (rowIndex: number, colIndex: number) => {
+  const revealHandler = (rowIndex: number, colIndex: number) => {
     const itemClicked = board[rowIndex][colIndex];
     if (!itemClicked.isRevealed) {
       if (itemClicked.isMine) {
@@ -56,8 +58,11 @@ const Minesweeper = () => {
       <div className="minesweeper-board">
         <DisplayBoard 
           viewableBoard={board}
-          clickHandler={clickHandler}
+          clickHandler={revealHandler}
         />
+      </div>
+      <div className="button-container">
+        <button onClick={() => boardDispatcher({type: "CLEAR", payload: {}})}>Clear</button>
       </div>
     </div>
   );

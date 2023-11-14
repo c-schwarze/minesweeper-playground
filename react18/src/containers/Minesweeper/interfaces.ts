@@ -4,3 +4,8 @@ export interface MinesweeperItem {
     isFlagged: boolean;
     numSurroundingMines: number;
 }
+
+export interface CoordinateTuple {
+    rowIndex: number;
+    colIndex: number;
+}
