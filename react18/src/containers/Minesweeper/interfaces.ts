@@ -1,3 +1,8 @@
+export interface MinesweeperGlobalState {
+    hasFirstClick: boolean;
+    board: MinesweeperItem[][];
+}
+
 export interface MinesweeperItem {
     isMine: boolean;
     isRevealed: boolean;
