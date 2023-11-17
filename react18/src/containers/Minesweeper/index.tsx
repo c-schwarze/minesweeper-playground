@@ -1,7 +1,7 @@
 import React, { useState, useReducer, useEffect } from "react";
 
 import { BOARD_HEIGHT, BOARD_WIDTH, NUM_MINES } from "./constants";
-import { createEmptyMinesweeper, generateBoard, getRevealedBoard } from "./utils";
+import { createEmptyMinesweeper, placeStartingMines, getRevealedBoard } from "./utils";
 import DisplayBoard from "../../components/DisplayBoard";
 import { MinesweeperItem, MinesweeperGlobalState } from "./interfaces";
 
@@ -16,29 +16,34 @@ const testReducer = (prevState: MinesweeperGlobalState, action: { type: string; 
         console.log("FIRST CLICK")       
         // make sure we have our params
         if (action.payload.rowIndex === undefined || action.payload.colIndex === undefined) {
-          return MinesweeperState;
+          return {...MinesweeperState};
         }
   
-        MinesweeperState.board = generateBoard(MinesweeperState.board, action.payload.rowIndex, action.payload.colIndex, BOARD_WIDTH, BOARD_HEIGHT, NUM_MINES);
+        if (MinesweeperState.hasFirstClick) {
+          return {...MinesweeperState};
+        }
+        
         MinesweeperState.hasFirstClick = true;
-        return MinesweeperState;
+        MinesweeperState.board = placeStartingMines(MinesweeperState.board, action.payload.rowIndex, action.payload.colIndex, BOARD_WIDTH, BOARD_HEIGHT, NUM_MINES);
+        console.log(MinesweeperState.board);
+        return {...MinesweeperState};
       case 'REVEAL':
         console.log("REVEAL")
         MinesweeperState = {...prevState};
        
         // make sure we have our params
         if (action.payload.rowIndex === undefined || action.payload.colIndex === undefined) {
-          return MinesweeperState;
+          return {...MinesweeperState};
         }
-        
+
         // do a recursive loop to reveal all applicable
         MinesweeperState.board = getRevealedBoard(MinesweeperState.board, action.payload.rowIndex, action.payload.colIndex, BOARD_WIDTH, BOARD_HEIGHT)
-        
-        return MinesweeperState;
+        console.log("BOARD REVEAL", MinesweeperState.board)
+        return {...MinesweeperState};
       case 'CLEAR':
         MinesweeperState = {...prevState};
         MinesweeperState = createEmptyMinesweeper(BOARD_WIDTH, BOARD_HEIGHT);
-        return MinesweeperState
+        return {...MinesweeperState}
       default:
         return createEmptyMinesweeper(BOARD_WIDTH, BOARD_HEIGHT)
   }
@@ -48,6 +53,7 @@ const Minesweeper = () => {
   const [boardState, boardDispatcher] = useReducer(testReducer, createEmptyMinesweeper(BOARD_WIDTH, BOARD_HEIGHT));
   
   const revealHandler = (rowIndex: number, colIndex: number) => {
+    console.log("revealHandler")
     const itemClicked = boardState.board[rowIndex][colIndex];
 
     // Generate the board - if there are none revealed
@@ -70,6 +76,15 @@ const Minesweeper = () => {
         <DisplayBoard 
           viewableBoard={boardState.board}
           clickHandler={revealHandler}
+        />
+      </div>
+
+      <h2>TEST</h2>
+      <div className="minesweeper-board">
+        <DisplayBoard 
+          viewableBoard={boardState.board}
+          clickHandler={revealHandler}
+          viewAll
         />
       </div>
       <div className="button-container">

@@ -5,19 +5,20 @@ interface MinesweeperSquareProps {
     colIndex: number;
     squareValue: MinesweeperItem;
     clickHandler: (rowIndex: number, colIndex: number) => void;
+    defaultReveal?: boolean;
 }
 
-const MinesweeperSquare = ({squareValue, clickHandler, rowIndex, colIndex}: MinesweeperSquareProps) => {
+const MinesweeperSquare = ({squareValue, clickHandler, rowIndex, colIndex, defaultReveal}: MinesweeperSquareProps) => {
     return <div className="grid-item">
         {
-            squareValue.isRevealed ? (
-                    squareValue.numSurroundingMines > 0 ? (
-                        <button className="minesweeper-square" disabled>{squareValue.numSurroundingMines}</button>
+            (squareValue.isRevealed || defaultReveal) ? (
+                    (squareValue.isFlagged) || (squareValue.isMine && defaultReveal) ? (
+                        <button className="minesweeper-square" disabled>M</button>
                     ) : (
-                        <button className="minesweeper-square" disabled />
+                        <button className="minesweeper-square" disabled>{squareValue.numSurroundingMines || ''}</button>
                     )
             ) : (
-                <button className="minesweeper-square" onClick={() => !squareValue.isRevealed && clickHandler(rowIndex, colIndex)}>{squareValue.isFlagged ? 'M' : '?'}</button>
+                <button className="minesweeper-square" onClick={() => clickHandler(rowIndex, colIndex)}>?</button>
             )
         }
     </div>

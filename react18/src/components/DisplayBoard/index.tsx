@@ -4,14 +4,15 @@ import { MinesweeperItem } from "../../containers/Minesweeper/interfaces";
 interface DisplayBoardProps {
     viewableBoard: MinesweeperItem[][];
     clickHandler: (rowIndex: number, colIndex: number) => void;
+    viewAll?: boolean;
 }
 
-const DisplayBoard = ({viewableBoard, clickHandler}: DisplayBoardProps) => {
+const DisplayBoard = ({viewableBoard, clickHandler, viewAll}: DisplayBoardProps) => {
     return (
         viewableBoard.map((col: MinesweeperItem[], colIndex: number) => (
             <div className="grid-container" key={`col-${colIndex}`}>
                 {col.map((squareValue: MinesweeperItem, rowIndex: number) => (
-                    <MinesweeperSquare squareValue={squareValue} clickHandler={() => clickHandler(colIndex, rowIndex)} rowIndex={rowIndex} colIndex={colIndex} />
+                    <MinesweeperSquare squareValue={squareValue} clickHandler={() => clickHandler(colIndex, rowIndex)} rowIndex={rowIndex} colIndex={colIndex} defaultReveal={viewAll} />
                 ))}
             </div>
         ))
