@@ -3,16 +3,17 @@ import { MinesweeperItem } from "../../containers/Minesweeper/interfaces";
 
 interface DisplayBoardProps {
     viewableBoard: MinesweeperItem[][];
-    clickHandler: (rowIndex: number, colIndex: number) => void;
+    clickHandler: (type: string, rowIndex: number, colIndex: number) => void;
     viewAll?: boolean;
+    disabled?: boolean;
 }
 
-const DisplayBoard = ({viewableBoard, clickHandler, viewAll}: DisplayBoardProps) => {
+const DisplayBoard = ({viewableBoard, clickHandler, viewAll, disabled}: DisplayBoardProps) => {
     return (
-        viewableBoard.map((col: MinesweeperItem[], colIndex: number) => (
-            <div className="grid-container" key={`col-${colIndex}`}>
-                {col.map((squareValue: MinesweeperItem, rowIndex: number) => (
-                    <MinesweeperSquare squareValue={squareValue} clickHandler={() => clickHandler(colIndex, rowIndex)} rowIndex={rowIndex} colIndex={colIndex} defaultReveal={viewAll} />
+        viewableBoard.map((row: MinesweeperItem[], rowIndex: number) => (
+            <div className="grid-container" key={`col-${rowIndex}`}>
+                {row.map((squareValue: MinesweeperItem, colIndex: number) => (
+                    <MinesweeperSquare squareValue={squareValue} clickHandler={clickHandler} rowIndex={rowIndex} colIndex={colIndex} defaultReveal={viewAll} disabled={disabled}/>
                 ))}
             </div>
         ))

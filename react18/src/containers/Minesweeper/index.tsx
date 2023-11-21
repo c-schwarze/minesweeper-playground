@@ -1,9 +1,9 @@
-import React, { useState, useReducer, useEffect } from "react";
+import React, { useReducer } from "react";
 
 import { BOARD_HEIGHT, BOARD_WIDTH, NUM_MINES } from "./constants";
-import { createEmptyMinesweeper, placeStartingMines, getRevealedBoard } from "./utils";
+import { createEmptyMinesweeper, placeStartingMines, getRevealedBoard, hasWon, hasLost } from "./utils";
 import DisplayBoard from "../../components/DisplayBoard";
-import { MinesweeperItem, MinesweeperGlobalState } from "./interfaces";
+import { MinesweeperGlobalState } from "./interfaces";
 
 
 // TODO - update type: string to be an enum
@@ -13,22 +13,20 @@ const testReducer = (prevState: MinesweeperGlobalState, action: { type: string; 
   switch (action.type) {
       case 'FIRST_CLICK':
         MinesweeperState = {...prevState};
-        console.log("FIRST CLICK")       
+         
         // make sure we have our params
         if (action.payload.rowIndex === undefined || action.payload.colIndex === undefined) {
           return {...MinesweeperState};
         }
-  
         if (MinesweeperState.hasFirstClick) {
           return {...MinesweeperState};
         }
         
         MinesweeperState.hasFirstClick = true;
         MinesweeperState.board = placeStartingMines(MinesweeperState.board, action.payload.rowIndex, action.payload.colIndex, BOARD_WIDTH, BOARD_HEIGHT, NUM_MINES);
-        console.log(MinesweeperState.board);
+
         return {...MinesweeperState};
       case 'REVEAL':
-        console.log("REVEAL")
         MinesweeperState = {...prevState};
        
         // make sure we have our params
@@ -38,7 +36,29 @@ const testReducer = (prevState: MinesweeperGlobalState, action: { type: string; 
 
         // do a recursive loop to reveal all applicable
         MinesweeperState.board = getRevealedBoard(MinesweeperState.board, action.payload.rowIndex, action.payload.colIndex, BOARD_WIDTH, BOARD_HEIGHT)
-        console.log("BOARD REVEAL", MinesweeperState.board)
+
+        return {...MinesweeperState};
+      case 'FLAG':
+        MinesweeperState = {...prevState};
+       
+        // make sure we have our params
+        if (action.payload.rowIndex === undefined || action.payload.colIndex === undefined) {
+          return {...MinesweeperState};
+        }
+        
+        MinesweeperState.board[action.payload.rowIndex][action.payload.colIndex].isFlagged = true;
+        
+        return {...MinesweeperState};
+      case 'UNFLAG':
+        MinesweeperState = {...prevState};
+        
+        // make sure we have our params
+        if (action.payload.rowIndex === undefined || action.payload.colIndex === undefined) {
+          return {...MinesweeperState};
+        }
+        
+        MinesweeperState.board[action.payload.rowIndex][action.payload.colIndex].isFlagged = false;
+        
         return {...MinesweeperState};
       case 'CLEAR':
         MinesweeperState = {...prevState};
@@ -51,20 +71,25 @@ const testReducer = (prevState: MinesweeperGlobalState, action: { type: string; 
 
 const Minesweeper = () => {
   const [boardState, boardDispatcher] = useReducer(testReducer, createEmptyMinesweeper(BOARD_WIDTH, BOARD_HEIGHT));
-  
-  const revealHandler = (rowIndex: number, colIndex: number) => {
-    console.log("revealHandler")
-    const itemClicked = boardState.board[rowIndex][colIndex];
 
+  // disable right click menu
+  document.addEventListener("contextmenu", (event) => {
+    event.preventDefault();
+  });
+  
+  const revealHandler = (type: string, rowIndex: number, colIndex: number) => {
     // Generate the board - if there are none revealed
-    if (!boardState.hasFirstClick) {
-      boardDispatcher({type: "FIRST_CLICK", payload: { rowIndex, colIndex }})
-    } else if (!itemClicked.isRevealed) {
-      if (itemClicked.isMine) {
-        // TODO - add in a "losing" screen. display things
-        boardDispatcher({type: "CLEAR", payload: {}})
+    if (type === 'reveal') {
+      if (!boardState.hasFirstClick) {
+        boardDispatcher({type: "FIRST_CLICK", payload: { rowIndex, colIndex }})
       } else {
         boardDispatcher({type: "REVEAL", payload: { rowIndex, colIndex }})
+      }
+    } else {
+      if (boardState.board[rowIndex][colIndex].isFlagged) {
+        boardDispatcher({type: "UNFLAG", payload: { rowIndex, colIndex }})
+      } else {
+        boardDispatcher({type: "FLAG", payload: { rowIndex, colIndex }})
       }
     }
   }
@@ -72,19 +97,18 @@ const Minesweeper = () => {
   return (
     <div>
       <h1>Minesweeper</h1>
+      {hasWon(boardState.board) && (
+        <h2>YOU HAVE WON THE GAME!</h2>
+      )}
+      {hasLost(boardState.board) && (
+        <h2>YOU HAVE LOST THE GAME!</h2>
+      )}
       <div className="minesweeper-board">
         <DisplayBoard 
           viewableBoard={boardState.board}
           clickHandler={revealHandler}
-        />
-      </div>
-
-      <h2>TEST</h2>
-      <div className="minesweeper-board">
-        <DisplayBoard 
-          viewableBoard={boardState.board}
-          clickHandler={revealHandler}
-          viewAll
+          disabled={hasWon(boardState.board) || hasLost(boardState.board)}
+          viewAll={hasWon(boardState.board) || hasLost(boardState.board)}
         />
       </div>
       <div className="button-container">

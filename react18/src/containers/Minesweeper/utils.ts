@@ -16,16 +16,17 @@ export const createEmptyMinesweeper = (width: number, height: number): Minesweep
 export const placeStartingMines = (board: MinesweeperItem[][], startingRowIndex: number, startingColIndex: number, width: number, height: number, numMines: number): MinesweeperItem[][] => {
     // Place the mines
     let minesPlaced = getTotalMinesOnBoard(board)
-    let surroundingStartingIndices = Get9SurroundingIndices(width, height, startingRowIndex, startingColIndex, true);
-
+    let surroundingStartingIndices = Get9SurroundingIndices(width, height, startingRowIndex, startingColIndex, false);
     while (minesPlaced < numMines) {
         let colAttempt = getRandomInt(width);
         let rowAttempt = getRandomInt(height);
-        let attempt: CoordinateTuple = {rowIndex: rowAttempt, colIndex: colAttempt};
         
         // a mine cannot be surrounding the start tile
         // a mine cannot be placed where another mine is
-        if (surroundingStartingIndices.includes(attempt) || board[rowAttempt][colAttempt].isMine) {
+        let isInProtectedTiles = surroundingStartingIndices.find((startingTiles) => (
+            startingTiles.rowIndex === rowAttempt && startingTiles.colIndex === colAttempt
+        ))
+        if (isInProtectedTiles || board[rowAttempt][colAttempt].isMine) {
             continue
         }
         board[rowAttempt][colAttempt].isMine = true;
@@ -74,14 +75,14 @@ export const Get9SurroundingIndices = (widthBoundary: number, heightBoundary: nu
 // TODO - please rename this.
 export const getRevealedBoard = (board: MinesweeperItem[][], rowIndex: number, colIndex: number, boardWidth: number, boardHeight: number): MinesweeperItem[][] => {
     const tile = board[rowIndex][colIndex]
-    console.log(" tile.numSurroundingMines === 0",  tile.numSurroundingMines === 0)
-    if (!tile.isRevealed && tile.numSurroundingMines === 0 && !tile.isMine) {
-        tile.isRevealed = true
+    tile.isRevealed = true
+
+    if (tile.numSurroundingMines === 0 && !tile.isMine) {
         const surroundingIndices = Get9SurroundingIndices(boardWidth, boardHeight, rowIndex, colIndex, true);
-        console.log("SURROUNDING", surroundingIndices)
         surroundingIndices.map((coordinates) => {
-            console.log("SURROUNDING INDICIES", coordinates)
-            board = getRevealedBoard(board, coordinates.rowIndex, coordinates.colIndex, boardWidth, boardHeight);
+            if (!board[coordinates.rowIndex][coordinates.colIndex].isRevealed) {
+                board = getRevealedBoard(board, coordinates.rowIndex, coordinates.colIndex, boardWidth, boardHeight);
+            }
         })
     }
     return board
@@ -95,4 +96,32 @@ export const getTotalMinesOnBoard = (board: MinesweeperItem[][]): number => {
         ))
     ))
     return total;
+}
+
+export const hasWon = (board: MinesweeperItem[][]): boolean => {
+    let onlyMinesAreRevealed = true;
+    
+    board.map((row) => 
+        row.map((tile) => {
+            if (!tile.isMine && !tile.isRevealed) {  
+                onlyMinesAreRevealed = false;
+            }
+        })
+    )
+    
+    return onlyMinesAreRevealed;
+}
+
+export const hasLost = (board: MinesweeperItem[][]): boolean => {
+    let hasLost = false;
+    
+    board.map((row) => {
+        row.map((tile) => {
+            if (tile.isMine && tile.isRevealed) {  
+                hasLost = true;
+            }
+        })
+    })
+
+    return hasLost;
 }
