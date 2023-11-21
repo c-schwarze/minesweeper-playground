@@ -3,7 +3,7 @@ import { MinesweeperItem, CoordinateTuple, MinesweeperGlobalState } from "./inte
 export const createEmptyMinesweeper = (width: number, height: number): MinesweeperGlobalState => {
     const nilBoard = Array.from(Array(width), () => new Array(height).fill(new Object))
     const board = nilBoard.map((col) => (
-        col.map((item) => ({
+        col.map((_) => ({
             isMine: false,
             isRevealed: false,
             isFlagged: false,
