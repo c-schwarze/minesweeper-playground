@@ -69,12 +69,15 @@ const testReducer = (prevState: MinesweeperGlobalState, action: { type: string; 
   }
 }
 
-const Minesweeper = () => {
+export const Minesweeper = () => {
   const [boardState, boardDispatcher] = useReducer(testReducer, createEmptyMinesweeper(BOARD_WIDTH, BOARD_HEIGHT));
+
+  const playerHasWon = hasWon(boardState.board);
+  const playerHasLost = hasLost(boardState.board);
 
   // disable right click menu
   document.addEventListener("contextmenu", (event) => {
-    event.preventDefault();
+    // event.preventDefault();
   });
   
   const revealHandler = (type: string, rowIndex: number, colIndex: number) => {
@@ -97,18 +100,18 @@ const Minesweeper = () => {
   return (
     <div>
       <h1>Minesweeper</h1>
-      {hasWon(boardState.board) && (
+      {playerHasWon && (
         <h2>YOU HAVE WON THE GAME!</h2>
       )}
-      {hasLost(boardState.board) && (
+      {playerHasLost && (
         <h2>YOU HAVE LOST THE GAME!</h2>
       )}
-      <div className="minesweeper-board">
+      <div className="minesweeper-board" data-testid="minesweeper-board">
         <DisplayBoard 
           viewableBoard={boardState.board}
           clickHandler={revealHandler}
-          disabled={hasWon(boardState.board) || hasLost(boardState.board)}
-          viewAll={hasWon(boardState.board) || hasLost(boardState.board)}
+          disabled={playerHasWon || playerHasLost}
+          viewAll={playerHasWon || playerHasLost}
         />
       </div>
       <div className="button-container">

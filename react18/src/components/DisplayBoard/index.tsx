@@ -13,7 +13,15 @@ const DisplayBoard = ({viewableBoard, clickHandler, viewAll, disabled}: DisplayB
         viewableBoard.map((row: MinesweeperItem[], rowIndex: number) => (
             <div className="grid-container" key={`col-${rowIndex}`}>
                 {row.map((squareValue: MinesweeperItem, colIndex: number) => (
-                    <MinesweeperSquare squareValue={squareValue} clickHandler={clickHandler} rowIndex={rowIndex} colIndex={colIndex} defaultReveal={viewAll} disabled={disabled}/>
+                    <MinesweeperSquare 
+                        squareValue={squareValue} 
+                        clickHandler={clickHandler}
+                        rowIndex={rowIndex}
+                        colIndex={colIndex}
+                        defaultReveal={viewAll}
+                        disabled={disabled}
+                        key={`minesweeper-square-${rowIndex}-${colIndex}`}
+                    />
                 ))}
             </div>
         ))
