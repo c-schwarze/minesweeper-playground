@@ -1,0 +1,1 @@
+This will be Python 3.11 with Django to learn some Django.
