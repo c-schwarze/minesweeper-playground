@@ -77,7 +77,7 @@ export const Minesweeper = () => {
 
   // disable right click menu
   document.addEventListener("contextmenu", (event) => {
-    // event.preventDefault();
+    event.preventDefault();
   });
   
   const revealHandler = (type: string, rowIndex: number, colIndex: number) => {
