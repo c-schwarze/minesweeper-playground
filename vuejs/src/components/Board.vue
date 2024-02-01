@@ -9,7 +9,11 @@ const props = defineProps<{
 }>();
 
 // TODO - move this to a method, probably
-const boardData = ref([...Array(props.rows)].map(() => [...Array(props.cols)].map(() => 'x')));
+const boardData = ref([...Array(props.rows)].map(() => [...Array(props.cols)].map(() => ({
+  value: 'empty',
+  isFlagged: false,
+  isRevealed: false,
+}))));
 const minesRemaining = ref(0)
 const handleClick = (payload: {row: Number, col: Number}) => {
   const {row, col} = payload;
@@ -26,6 +30,9 @@ const handleClick = (payload: {row: Number, col: Number}) => {
           <Square 
             :row="rowIndex" 
             :col="squareIndex"
+            :value="square.value"
+            :isFlagged="square.isFlagged"
+            :isRevealed="square.isRevealed"
             @click="handleClick"
           />
         </div>

@@ -15,8 +15,6 @@ const createBoardKey = ref(0);
     <h1>Minesweeper</h1>
     <h2>Todos</h2>
     <ol>
-      <li>Add objects to be used as the mine squares</li>
-      <li>Display current status of the mine squares</li>
       <li>Add click to flag mines</li>
       <li>Generate random mines</li>
       <li>Add click to reveal square</li>
