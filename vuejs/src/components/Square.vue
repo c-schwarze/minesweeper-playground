@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-// defineProps<{
-  
-// }>()
+const props = defineProps<{
+  row: Number;
+  col: Number;
+}>();
+
+defineEmits({
+  click(payload: { row: Number, col: Number }) {}
+});
 </script>
 
 <template>
-  <div class="square">
-    X
-  </div>
+  <button @click="$emit('click', {row: props.row, col: props.col})">X</button>
 </template>
 
 <style scoped>
