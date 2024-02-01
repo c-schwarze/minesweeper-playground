@@ -11,7 +11,6 @@ const props = defineProps<{
 // TODO - move this to a method, probably
 const boardData = ref([...Array(props.rows)].map(() => [...Array(props.cols)].map(() => 'x')));
 const minesRemaining = ref(0)
-
 const handleClick = (payload: {row: Number, col: Number}) => {
   const {row, col} = payload;
   alert(`Clicked row (${row}) col (${col})`);
@@ -20,7 +19,7 @@ const handleClick = (payload: {row: Number, col: Number}) => {
 
 <template>
   <div>
-    <p>Mines remaining: {{ props.mines}}</p>
+    <p>Mines remaining: {{ mines}}</p>
     <div class="board">
       <div class="row" v-for="(row, rowIndex) in boardData" :key="rowIndex">
         <div class="square" v-for="(square, squareIndex) in row" :key="`${rowIndex} + ${squareIndex}`">
